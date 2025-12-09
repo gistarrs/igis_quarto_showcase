@@ -140,14 +140,6 @@ display(HTML(html))
   </ul>
 </section>
 
-```{r}
-print("This chunk is in R!")
-```
-
-```{python}
-print("This chunk is in python!")
-```
-
 <section data-transition="slide">
 <div style="display: flex; align-items: center; gap: 20px;">
   <img src="image_assets/igis-logo_460x144 (1).png" width="300">

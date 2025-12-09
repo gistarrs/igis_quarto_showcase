@@ -5,10 +5,6 @@ format: revealjs
 theme: solarized
 css: ucanr-style.css
 toc: false
-
-python:
-  executable: "C:/Users/gstarrs/Projects/IGIS/Quarto_Python/.conda/python.exe"
-
 ---
 
 <!-- Define styles at the top of the document -->
@@ -69,45 +65,54 @@ python:
   <img src="image_assets/igis-logo_460x144 (1).png" width="300">
 </div>
 
-```{python}
-import os
-from IPython.display import display, HTML
+```{r}
+library(htmltools)
 
 # Folder with images
-img_folder = r"image_assets\staff_circles"
-img_files = [os.path.join(img_folder, f) for f in sorted(os.listdir(img_folder)) if f.endswith(".png")]
+img_folder <- "image_assets/staff_circles"
+
+# List PNG files
+img_files <- list.files(img_folder, pattern = "\\.png$", full.names = TRUE)
 
 # Labels for each image
-labels = [
-    "Maggi Kelly",
-    "Andy Lyons",
-    "Sean Hogan",
-    "Shane Feirer",
-    "Robert Johnson",
-    "Priyanka Vyas",
-    "Genoa Starrs"
-]
+labels <- c(
+  "Maggi Kelly",
+  "Andy Lyons",
+  "Sean Hogan",
+  "Shane Feirer",
+  "Robert Johnson",
+  "Priyanka Vyas",
+  "Genoa Starrs"
+)
 
-# Generate HTML for a staff row with larger images
-html = '<div style="display: flex; justify-content: center; align-items: flex-start; gap: 15px;">'  # more gap for bigger images
-for img, label in zip(img_files, labels):
-    # Split first and last names to force line break
-    label_html = '<br>'.join(label.split())
-    html += f'''
-    <div style="
+# Build list of divs for each staff member
+staff_divs <- mapply(
+  function(img, label) {
+    label_html <- gsub(" ", "<br>", label)
+
+    div(
+      style = "
         text-align: center; 
-        font-size: 24px;       /* slightly larger font */
-        font-weight: 500;      /* moderately bold */
-        line-height: 1.2em;    /* spacing between lines */
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.2em;
         color: #005fae;
-    ">
-        <img src="{img}" width="130px" style="border-radius: 50%;"><br>  <!-- larger image -->
-        {label_html}
-    </div>
-    '''
-html += '</div>'
+      ",
+      tags$img(src = img, width = "130px", style = "border-radius: 50%;"),
+      HTML("<br>"),
+      HTML(label_html)
+    )
+  },
+  img_files,
+  labels,
+  SIMPLIFY = FALSE
+)
 
-display(HTML(html))
+# Wrap in outer flexbox container
+htmltools::div(
+  style = "display: flex; justify-content: center; align-items: flex-start; gap: 15px;",
+  staff_divs
+)
 
 ```
 <br>
@@ -140,14 +145,6 @@ display(HTML(html))
   </ul>
 </section>
 
-```{r}
-print("This chunk is in R!")
-```
-
-```{python}
-print("This chunk is in python!")
-```
-
 <section data-transition="slide">
 <div style="display: flex; align-items: center; gap: 20px;">
   <img src="image_assets/igis-logo_460x144 (1).png" width="300">
@@ -156,53 +153,85 @@ print("This chunk is in python!")
   </h4>
 </div>
 
-```{python}
-import geopandas as gpd
-UC_ANR = gpd.read_file("UC_ANR.gpkg")
-gdf = UC_ANR
-import folium
+```{r, message=FALSE}
+library(sf)
+library(leaflet)
+library(htmlwidgets)
 
-m = folium.Map(
-    location=[36.7783, -119.4179],
-    zoom_start=6,
-    width='100%',
-    height='100%'   # Fill the iframe entirely
+# Read the GeoPackage (same as Python)
+UC_ANR <- sf::st_read("UC_ANR.gpkg", quiet = TRUE)
+
+# Extract coordinates (leaflet prefers regular columns)
+coords <- sf::st_coordinates(UC_ANR)
+UC_ANR$lon <- coords[, "X"]
+UC_ANR$lat <- coords[, "Y"]
+
+# Shape + color map equivalent to Python version
+shape_map <- list(
+  "UCCE"      = list(sides = 30, color = "purple"),  # circle
+  "UC Campus" = list(sides = 5,  color = "red"),     # pentagon
+  "REC"       = list(sides = 3,  color = "green")    # triangle
 )
-# Shape and color mapping
-shape_map = {
-    'UCCE': {'sides': 30, 'color': 'purple'},           # Circle (approximated with many sides)
-    'UC Campus': {'sides': 5, 'color': 'red'},       # Pentagon
-    'REC': {'sides': 3, 'color': 'green'},           # Triangle
+
+# Start the leaflet map
+m <- leaflet(UC_ANR) |> 
+  addTiles() |> 
+  setView(lng = -119.4179, lat = 36.7783, zoom = 6)
+
+# Add symbols
+for (i in seq_len(nrow(UC_ANR))) {
+  row <- UC_ANR[i, ]
+
+  cat <- row$CATEGORY
+  lat <- row$lat
+  lon <- row$lon
+  label <- row$Location
+
+  if (cat == "UCOP") {
+    # Star icon marker (FontAwesome)
+    m <- m |> addAwesomeMarkers(
+      lng = lon, lat = lat,
+      popup = label,
+      icon = awesomeIcons(
+        icon = "star",
+        iconColor = "black",
+        markerColor = "lightyellow"
+      )
+    )
+  } else {
+    # Polygon marker (circle/pentagon/triangle)
+    sides <- shape_map[[cat]]$sides
+    color <- shape_map[[cat]]$color
+    radius <- 5000   # leaflet polygon size in meters; adjust as needed
+    
+    # Build a regular polygon around the point
+    theta <- seq(0, 2*pi, length.out = sides + 1)
+    dx <- radius * cos(theta)
+    dy <- radius * sin(theta)
+
+    polygon_coords <- cbind(lon + dx * 0.00001, lat + dy * 0.00001)
+
+    m <- m |> addPolygons(
+      lng = polygon_coords[,1],
+      lat = polygon_coords[,2],
+      fillColor = color,
+      fillOpacity = 0.9,
+      color = color,
+      weight = 1,
+      popup = label
+    )
+  }
 }
 
-# Add markers
-for idx, row in gdf.iterrows():
-    symbol = row['CATEGORY']
-    
-    if symbol == 'UCOP':
-        # Star icon
-        folium.Marker(
-            location=[row['lat'], row['lon']],
-            popup=row['Location'],
-            icon=folium.Icon(color='yellow', icon='star')
-        ).add_to(m)
-    else:
-        folium.RegularPolygonMarker(
-            location=[row['lat'], row['lon']],
-            number_of_sides=shape_map[symbol]['sides'],
-            radius=5,
-            color=shape_map[symbol]['color'],
-            fill=True,
-            fill_color=shape_map[symbol]['color'],
-            popup=row['Location']
-        ).add_to(m)
+# Save the map under a NEW NAME so it doesn't conflict with Python's version
+htmlwidgets::saveWidget(m, "map_for_slide_R.html", selfcontained = TRUE)
 
-m.save("map_for_slide.html")
-display(HTML('''
+# Display iframe in Quarto slide
+htmltools::HTML('
 <div style="width:700px; height:450px; margin:auto; overflow:hidden;">
-    <iframe src="map_for_slide.html" width="100%" height="100%" style="border:none;"></iframe>
+    <iframe src="map_for_slide_R.html" width="100%" height="100%" style="border:none;"></iframe>
 </div>
-'''))
+')
 ```
 
 <div style="text-align:center; font-size:18px; color:#005fae; font-weight:400; font-style:italic; margin-top:15px; line-height:1.4;"> 

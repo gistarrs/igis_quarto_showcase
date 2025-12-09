@@ -1,0 +1,276 @@
+---
+title: "Quarto Showcase"
+author: ""
+format: revealjs
+theme: solarized
+css: ucanr-style.css
+toc: false
+
+python:
+  executable: "C:/Users/gstarrs/Projects/IGIS/Quarto_Python/.conda/python.exe"
+
+---
+
+<!-- Define styles at the top of the document -->
+<style>
+@keyframes sad_sparkle {
+  0%, 100% {
+    text-shadow:
+      0 0 5px #1E3A8A,   /* dark blue */
+      0 0 15px #6B21A8,  /* deep purple */
+      0 0 25px #8B5CF6,  /* bright violet */
+      0 0 35px #3B82F6;  /* vivid cyan */
+  }
+  50% {
+    text-shadow:
+      0 0 10px #6B21A8,
+      0 0 25px #8B5CF6,
+      0 0 40px #3B82F6,
+      0 0 55px #1E3A8A;
+  }
+}
+
+.sad_sparkle {
+  color: #1E3A8A; /* base text color, dark blue */
+  animation: sad_sparkle 1.5s infinite alternate;
+}
+</style>
+
+
+<style> 
+@keyframes sparkle { 
+    0%, 100% { 
+        text-shadow: 
+            0 0 5px #FFFF33,   /* brighter yellow */ 
+            0 0 15px #FFEA00,  /* golden yellow */ 
+            0 0 25px #FFD700,  /* less orange, more gold */ 
+            0 0 35px #FFA500;  /* subtle orange for warmth */ 
+    } 
+    50% { 
+        text-shadow: 
+            0 0 10px #FFFF66, 
+            0 0 25px #FFFF00, 
+            0 0 40px #FFD700, 
+            0 0 55px #FF8C00; 
+    } 
+} 
+
+.sparkle { 
+    color: #FFD700; 
+    animation: sparkle 1s infinite alternate; 
+} 
+</style>
+
+<section data-transition="slide">
+<div style="display: flex; align-items: center; gap: 20px;">
+  <h2 style="margin: 0; color:#005fae; font-weight:500;">
+    The IGIS Team
+  </h2>
+  <img src="image_assets/igis-logo_460x144 (1).png" width="300">
+</div>
+
+```{python}
+import os
+from IPython.display import display, HTML
+
+# Folder with images
+img_folder = r"image_assets\staff_circles"
+img_files = [os.path.join(img_folder, f) for f in sorted(os.listdir(img_folder)) if f.endswith(".png")]
+
+# Labels for each image
+labels = [
+    "Maggi Kelly",
+    "Andy Lyons",
+    "Sean Hogan",
+    "Shane Feirer",
+    "Robert Johnson",
+    "Priyanka Vyas",
+    "Genoa Starrs"
+]
+
+# Generate HTML for a staff row with larger images
+html = '<div style="display: flex; justify-content: center; align-items: flex-start; gap: 15px;">'  # more gap for bigger images
+for img, label in zip(img_files, labels):
+    # Split first and last names to force line break
+    label_html = '<br>'.join(label.split())
+    html += f'''
+    <div style="
+        text-align: center; 
+        font-size: 24px;       /* slightly larger font */
+        font-weight: 500;      /* moderately bold */
+        line-height: 1.2em;    /* spacing between lines */
+        color: #005fae;
+    ">
+        <img src="{img}" width="130px" style="border-radius: 50%;"><br>  <!-- larger image -->
+        {label_html}
+    </div>
+    '''
+html += '</div>'
+
+display(HTML(html))
+
+```
+<br>
+
+::: {.styled-table style="font-size: 24px; color: #005fae; padding: 0px;"}
+| GIS & Drone Services | Workshops | Office Hours <br><span style="font-size:18px;">[*Sign-up link!*](https://igis.ucanr.edu/Office_Hours/)</span> |
+|----------------------|-----------|----------------------------------------------------------------------------------------------------------------|
+|           test           | <span style="font-size:18px;"> • ArcGIS Story Maps <br> • Geoprocessing with Python <br> • ArcGIS Field Maps <br> • Intro to ArcGIS Online <br> • Spatial Analysis with R and Python </span>  | <span style="font-size:18px;">• Using spatial data in research and extension <br> • Software and Apps <br> • Drones <br> • Research Data and Analysis <br> • Programming </span>|
+:::
+
+</section>
+
+
+<section data-transition="slide">
+  <h1 style="color: #024780;">Why</h1>
+   <h1 style="color: #024780;"> **Quarto?**</h1> </section>
+
+<section data-transition="slide">
+  <h1 style="color: #024780;">Why <br> <span style="color: #005fae;">NOT</span>     <span style="color: #024780; font-weight:bold; animation: sparkle 1.5s infinite; text-shadow: 0 0 2px #ffdd00, 0 0 5px #fff;">Quarto</span>?
+  </h1>
+  <ul>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Cross-platform</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Open source</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Reproducible content</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Multi-lingual / polyglot - R, Python, Julia</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Flexible output formats (HTML, PDF, Word, slides, books, dashboards)</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Customizable (Templates or create your own!)</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Leverages existing ecosystem of extensions for R and Python (like soils)</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Supports interactive content!</li>
+  </ul>
+</section>
+
+
+
+<section data-transition="slide">
+<div style="display: flex; align-items: center; gap: 20px;">
+  <img src="image_assets/igis-logo_460x144 (1).png" width="300">
+    <h4 style="margin: 0; color:#005fae; font-weight:0; font-family:inherit; font-size:18px;">
+    Agriculture • Natural Resources • Nutrition • Youth Development
+  </h4>
+</div>
+
+```{python}
+import geopandas as gpd
+UC_ANR = gpd.read_file("UC_ANR.gpkg")
+gdf = UC_ANR
+import folium
+
+m = folium.Map(
+    location=[36.7783, -119.4179],
+    zoom_start=6,
+    width='100%',
+    height='100%'   # Fill the iframe entirely
+)
+# Shape and color mapping
+shape_map = {
+    'UCCE': {'sides': 30, 'color': 'purple'},           # Circle (approximated with many sides)
+    'UC Campus': {'sides': 5, 'color': 'red'},       # Pentagon
+    'REC': {'sides': 3, 'color': 'green'},           # Triangle
+}
+
+# Add markers
+for idx, row in gdf.iterrows():
+    symbol = row['CATEGORY']
+    
+    if symbol == 'UCOP':
+        # Star icon
+        folium.Marker(
+            location=[row['lat'], row['lon']],
+            popup=row['Location'],
+            icon=folium.Icon(color='yellow', icon='star')
+        ).add_to(m)
+    else:
+        folium.RegularPolygonMarker(
+            location=[row['lat'], row['lon']],
+            number_of_sides=shape_map[symbol]['sides'],
+            radius=5,
+            color=shape_map[symbol]['color'],
+            fill=True,
+            fill_color=shape_map[symbol]['color'],
+            popup=row['Location']
+        ).add_to(m)
+
+m.save("map_for_slide.html")
+display(HTML('''
+<div style="width:700px; height:450px; margin:auto; overflow:hidden;">
+    <iframe src="map_for_slide.html" width="100%" height="100%" style="border:none;"></iframe>
+</div>
+'''))
+```
+
+<div style="text-align:center; font-size:18px; color:#005fae; font-weight:400; font-style:italic; margin-top:15px; line-height:1.4;"> 
+"Connecting the power of UC research with local communities to improve the lives of all Californians." 
+</div> 
+</section>
+
+
+<section data-transition="slide">
+... No really,
+</section>
+
+<section data-auto-animate>
+ <h1 style="color: #024780;">Why <br> <span style="color: #005fae;">NOT</span>     <span style="color: #fff; font-weight:bold; animation: sad_sparkle 1.5s infinite; text-shadow: 0 0 2px #ffdd00, 0 0 5px #fff;">Quarto</span>?
+  </h1>
+  <ul>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Loss of click-and-drag</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Relatively new on the scene</li>
+    <li class="fragment" style="color: #005fae; font-size: 24px;">Learning curve</li>
+  </ul>
+</section>
+
+<section data-auto-animate>
+  <h1 style="color: #024780;">Why <br> <span style="color: #005fae;">NOT</span>     <span style="color: #fff; font-weight:bold; animation: sad_sparkle 1.5s infinite; text-shadow: 0 0 2px #ffdd00, 0 0 5px #fff;">Quarto</span>?
+  </h1>
+  <ul>
+    <li style="color: #005fae; font-size: 24px;">Loss of click-and-drag</li>
+    <li style="color: #005fae; font-size: 24px;">Relatively new on the scene</li>
+    <li style="color: #005fae; font-size: 24px;">Learning curve</li>
+    <li style="color: #005fae; font-size: 24px;">**especially for non-coders!**</li>
+  </ul>
+</section>
+
+---
+
+
+<section data-auto-animate>
+  <p>If you're used to <strong>Coding</strong> and:</p>
+  <ul>
+    <li style="color: #005fae; font-size: 24px;">R Markdown </li>
+    <li style="color: #005fae; font-size: 24px;">R or Python</li>
+    <li style="color: #005fae; font-size: 24px;">Jupyter Notebooks</li>
+  </ul>
+</section>
+
+<section data-auto-animate>
+  <p>If you're used to <strong>Coding</strong> and:</p>
+  <ul>
+    <li style="color: #005fae; font-size: 24px;">R Markdown </li>
+    <li style="color: #005fae; font-size: 24px;">R or Python</li>
+    <li style="color: #005fae; font-size: 24px;">Jupyter Notebooks</li>
+    </ul>
+Quarto is a **natural progression.**
+
+</section>
+---
+
+<section data-auto-animate>
+    <p>If you're used to **User Interfaces** like:<p>
+  <ul>
+    <li style="color: #005fae; font-size: 24px;">Word</li>
+    <li style="color: #005fae; font-size: 24px;">Powerpoint</li>
+    <li style="color: #005fae; font-size: 24px;">Google Docs</li>
+  </ul>
+</section>
+
+<section data-auto-animate>
+    <p>If you're used to **User Interfaces** like:<p>
+  <ul>
+    <li style="color: #005fae; font-size: 24px;">Word</li>
+    <li style="color: #005fae; font-size: 24px;">Powerpoint</li>
+    <li style="color: #005fae; font-size: 24px;">Google Docs</li>
+    </ul>
+Quarto will have **more of a learning curve,** but is still useful!
+
+</section>
+---
